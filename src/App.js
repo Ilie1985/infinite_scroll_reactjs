@@ -11,6 +11,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
+  const [newImages, setNewImages] = useState(false);
 
   const mounted = useRef(false);
 
@@ -18,11 +19,11 @@ function App() {
     setLoading(true);
     let url;
 
-    const urlPage = `&page= ${page}`;
+    const urlPage = `&page=${page}`;
     const urlQuery = `&query=${query}`;
 
     if (query) {
-      url = ` ${searchUrl}${clientID}${urlPage}${urlQuery}`;
+      url = `${searchUrl}${clientID}${urlPage}${urlQuery}`;
     } else {
       url = `${mainUrl}${clientID}${urlPage}`;
     }
@@ -40,11 +41,11 @@ function App() {
           return [...oldPhotos, ...data];
         }
       });
-
+      setNewImages(false);
       setLoading(false);
     } catch (error) {
+      setNewImages(false);
       setLoading(false);
-      console.log(error);
     }
   };
 
@@ -53,12 +54,39 @@ function App() {
     //eslint-disable-next-line
   }, [page]);
 
-  // add scroll event listener
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
       return;
     }
+
+    if (!newImages) {
+      return;
+    }
+
+    if (loading) {
+      return;
+    }
+
+    setPage((oldPage) => oldPage +1)
+
+    //eslint-disable-next-line
+  }, [newImages]);
+
+  // add scroll event listener
+
+  const event = () => {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+      setNewImages(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", event);
+
+    return () => {
+      window.removeEventListener("scroll", event);
+    };
   }, []);
 
   const handleSubmit = (e) => {
@@ -68,7 +96,7 @@ function App() {
     }
     if (page === 1) {
       fetchImages();
-      return;
+    
     }
     setPage(1);
   };

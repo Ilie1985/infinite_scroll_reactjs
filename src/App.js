@@ -9,7 +9,7 @@ const searchUrl = `https://api.unsplash.com/search/photos/`;
 function App() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [query, setQuery] = useState("");
 
   const fetchImages = async () => {
@@ -30,7 +30,9 @@ function App() {
       const data = await response.json();
 
       setPhotos((oldPhotos) => {
-        if (query) {
+        if (query && page === 1) {
+          return data.results;
+        } else if (query) {
           return [...oldPhotos, ...data.results];
         } else {
           return [...oldPhotos, ...data];
@@ -69,7 +71,7 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("gello");
+    setPage(1);
   };
 
   return (

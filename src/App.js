@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import Photo from "./Photo";
 
-
 const clientID = `?client_id=${process.env.REACT_APP_ACCESS_KEY}`;
 const mainUrl = `https://api.unsplash.com/photos/`;
 const searchUrl = `https://api.unsplash.com/search/photos/`;
@@ -29,6 +28,23 @@ function App() {
 
   useEffect(() => {
     fetchImages();
+  }, []);
+
+  // add scroll event listener
+
+  useEffect(() => {
+    const event = window.addEventListener("scroll", () => {
+      if (
+        !loading &&
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 2
+      ) {
+        console.log("it worked");
+      }
+    });
+
+    return () => {
+      window.removeEventListener("scroll", event);
+    };
   }, []);
 
   const handleSubmit = (e) => {
